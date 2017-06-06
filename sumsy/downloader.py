@@ -90,12 +90,7 @@ class Downloader(Base):
             self.download_manifest(manifest)
             entries = self._validate_manifest(manifest)
 
-        directories = {''}
-        for content_hash, mode, path in entries:
-            directories.add(path.rpartition('/')[0])
-        for directory in sorted(directories):
-            self.create_directory(directory)
-
+        self.ensure_directory(self.directory)
         for content_hash, mode, path in entries:
             self.download_file(path, mode=mode, content_hash=content_hash)
 

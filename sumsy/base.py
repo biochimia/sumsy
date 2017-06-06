@@ -27,6 +27,7 @@ class Base:
 
         self.bucket = config.bucket
         self.prefix = getattr(config, 'prefix', None)
+        self.strip_path_components = getattr(config, 'strip', 0)
         self.manifest_key = config.manifest
 
         self.cache = getattr(config, 'cache', None)
@@ -34,6 +35,8 @@ class Base:
 
         if not self.directory.endswith(os.path.sep):
             self.directory += os.path.sep
+
+        self._created_directories = set()
 
         self.s3 = boto3.client('s3', region_name=self.region)
 
@@ -95,13 +98,19 @@ class Base:
                     'File hash in manifest does not match downloaded file: {}'
                     .format(key))
 
-            destination = key
+            directory, _, filename = key.rpartition('/')
+
+            for i in range(self.strip_path_components):
+                directory = directory.partition('/')[2]
+
             if os.path.sep != '/':
-                destination = destination.replace('/', os.path.sep)
-            destination = os.path.join(self.directory, destination)
+                directory = directory.replace('/', os.path.sep)
+            directory = os.path.join(self.directory, directory)
+
+            self.ensure_directory(directory)
 
             os.fchmod(provisional.fileno(), mode)
-            os.rename(provisional.name, destination)
+            os.rename(provisional.name, os.path.join(directory, filename))
 
             try:
                 provisional.close()
@@ -112,12 +121,14 @@ class Base:
     def download_manifest(self, writer):
         self.s3.download_fileobj(self.bucket, self.manifest_key, writer)
 
-    def create_directory(self, directory):
-        if os.path.sep != '/':
-            directory.replace('/', os.path.sep)
+    def ensure_directory(self, directory):
+        if directory in self._created_directories:
+            return
 
         try:
-            os.makedirs(os.path.join(self.directory, directory))
+            os.makedirs(directory)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
+
+        self._created_directories.add(directory)

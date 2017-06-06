@@ -55,6 +55,10 @@ def parse_args():
         '--manifest', default='latest', help='''S3 key for manifest (default:
         latest)''')
 
+    download.add_argument(
+        '--strip', default=0, type=int, help='''Number of path components to
+        strip from downloaded files (default: 0)''')
+
     # TODO: caching
     download.add_argument(
         '--cache', default='.sumsy', help='''Directory to use for caching
