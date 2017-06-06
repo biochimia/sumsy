@@ -10,7 +10,7 @@ with open('requirements.txt') as requirements_file:
 setup(
     name='sumsy',
     description='A forklift who greatly resembles another forklift',
-    version='0.2.0',
+    version='0.3.0',
     author='João Abecasis',
     author_email='joao@abecasis.name',
     url='https://github.com/biochimia/sumsy',
