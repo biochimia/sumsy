@@ -4,6 +4,7 @@ from Crypto.PublicKey import RSA
 
 from .uploader import Uploader
 from .downloader import Downloader
+from .keygenerator import KeyGenerator
 
 
 def RSAKeyType(path):
@@ -67,6 +68,19 @@ def parse_args():
     download.add_argument(
         'directory', metavar='DESTINATION', help='''Directory to download files
         to; the directory structure in S3 will be replicated locally''')
+
+
+    generate_key = subparsers.add_parser('generate-key')
+    generate_key.set_defaults(cls=KeyGenerator)
+
+    generate_key.add_argument(
+        '--key-size', default=4096, type=int, help='''Key length, or size (in
+        bits) of the RSA modulus. Must be a multiple of 256, and no smaller than
+        1024 (default: 4096)''')
+    generate_key.add_argument(
+        'key_name', help='''File name for the generated private key; the public
+        key will use the same name with an additional '.pub' suffix''')
+
 
     config = parser.parse_args()
 
