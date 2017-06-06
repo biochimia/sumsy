@@ -69,7 +69,7 @@ class Downloader(Base):
 
         if not self.verify(manifest_hash, signature):
             raise Exception(
-                'Manifest is not trusted: signature verification failed.')
+                'Manifest is not trusted: signature verification failed')
 
         result = []
         for entry in entries:
