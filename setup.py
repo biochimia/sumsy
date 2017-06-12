@@ -5,12 +5,12 @@ from setuptools import find_packages, setup
 
 
 with open('requirements.txt') as requirements_file:
-    requirements = [ requirement[:-1] for requirement in requirements_file ]
+    requirements = [ requirement.partition(' ')[0] for requirement in requirements_file ]
 
 setup(
     name='sumsy',
     description='A forklift who greatly resembles another forklift',
-    version='0.3.0',
+    version='0.4.0',
     author='João Abecasis',
     author_email='joao@abecasis.name',
     url='https://github.com/biochimia/sumsy',
